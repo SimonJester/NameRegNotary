@@ -1,4 +1,4 @@
 dapp-notary
 ===========
 
-Timestamp the existence of a DApp
+Timestamp the existence of a DApp on Ethereum.
