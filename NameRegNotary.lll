@@ -1,9 +1,16 @@
-;; Name Reg Notary
+;; Name Registration with Notary
 ;;
-;; 1. Registers DApp names
-;; 2. Records the timestamp of registry
+;; USAGE
+;;     If not registered yet, register name; otherwise return timestamp:
+;;         (send NameRegNotaryAddr "MyDAppName" valueInWei)
+;;     Unregister (only works if sent from original registered address):
+;;         (send NameRegNotaryAddr valueInWei)
 ;;
-;; Based on NameReg, which was taken from: 
+;; Should be backwards compatible with NameReg -- the only difference is 
+;; that it returns a timestamp if you try to register an already registered 
+;; name.
+;;
+;; Derived from NameReg, which was taken from: 
 ;;     https://github.com/ethereum/cpp-ethereum/wiki/LLL-Examples-for-PoC-5
 
 {
@@ -15,31 +22,36 @@
     [[69]] (caller)
   
     (return 0 (lll
+        ;; The first argument (name) exists
         (if (calldatasize)
-            ;; There's at least one argument
-            {
-                ;; Stop if the first arg (name) has already been registered.
-                (when @@(calldataload 0) (stop))
-  
-                ;; Store sender at name, and name at sender.
-                (when @@(caller) [[@@(caller)]] 0)
-                [[(calldataload 0)]] (caller)
-                [[(caller)]] (calldataload 0)
-                (stop)
-            }
-  
+
+            (if @@(calldataload 0)
+                ;; First arg is already registered, return timestamp.
+                (return @@(sha3 (calldataload 0)))
+
+                ;; Name is not registered, so 
+                ;; store sender at name, and name at sender.
+                {
+                    (when @@(caller) [[@@(caller)]] 0)
+                    [[(calldataload 0)]] (caller)
+                    [[(caller)]] (calldataload 0)
+                    (stop)
+                }
+            )
+
             ;; No arguments - either unregister or suicide if from owner.
             {
                 ;; Suicide if it's from owner's address.
                 (when (= (caller) @@69) (suicide (caller)))
   
-                ;; Otherwise, just unregister name, if registered.
+                ;; Otherwise, unregister name.
                 (when @@(caller) {
                     [[@@(caller)]] 0
                     [[(caller)]] 0
                 })
                 (stop)
             }
+
         )
     0))
 }
