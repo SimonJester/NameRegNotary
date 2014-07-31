@@ -1,0 +1,45 @@
+;; Name Reg Notary
+;;
+;; 1. Registers DApp names
+;; 2. Records the timestamp of registry
+;;
+;; Based on NameReg, which was taken from: 
+;;     https://github.com/ethereum/cpp-ethereum/wiki/LLL-Examples-for-PoC-5
+
+{
+    ;; Initialize
+    [thisName]: "NameRegNotary"
+    [[(address)]] @thisName
+    [[@thisName]] (address)
+    [[(sha3 @thisName)]] (timestamp)
+    [[69]] (caller)
+  
+    (return 0 (lll
+        (if (calldatasize)
+            ;; There's at least one argument
+            {
+                ;; Stop if the first arg (name) has already been registered.
+                (when @@(calldataload 0) (stop))
+  
+                ;; Store sender at name, and name at sender.
+                (when @@(caller) [[@@(caller)]] 0)
+                [[(calldataload 0)]] (caller)
+                [[(caller)]] (calldataload 0)
+                (stop)
+            }
+  
+            ;; No arguments - either unregister or suicide if from owner.
+            {
+                ;; Suicide if it's from owner's address.
+                (when (= (caller) @@69) (suicide (caller)))
+  
+                ;; Otherwise, just unregister name, if registered.
+                (when @@(caller) {
+                    [[@@(caller)]] 0
+                    [[(caller)]] 0
+                })
+                (stop)
+            }
+        )
+    0))
+}
