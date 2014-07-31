@@ -1,0 +1,16 @@
+// DApp Notary
+//
+// Proves that a DApp existed by providing these functions:
+//   1. Notarize (register and timestamp) a hash of a DApp that's on the 
+//      Ethereum blockchain.
+//   2. Return the timestamp when a DApp was registered.
+//   3. Return whether or not the current DApp code has changed since it was 
+//      registered.
+
+
+// Initialize contract by registering on NameReg
+//memoryStorage[0] = "DAppNotary"
+//call(???.gas, 0x2d0aceee7e5ab874e22ccf8d1a649f59106d74e8, ???)
+
+
+// 
