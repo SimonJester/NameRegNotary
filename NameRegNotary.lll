@@ -20,6 +20,10 @@
     [[@thisName]] (address)
     [[(sha3 @thisName)]] (timestamp)
     [[69]] (caller)
+
+    ;; Also register with (the original) NameReg
+    [0] @thisName
+    (call (- (gas) 100) 0x2d0aceee7e5ab874e22ccf8d1a649f59106d74e8 0 0 13 0 0)
   
     (return 0 (lll
         ;; The first argument (name) exists
