@@ -34,11 +34,12 @@
                 (return @@(sha3 (calldataload 0)))
 
                 ;; Name is not registered, so 
-                ;; store sender at name, and name at sender.
+                ;; store sender at name, name at sender and timestamp.
                 {
                     (when @@(caller) [[@@(caller)]] 0)
-                    [[(calldataload 0)]] (caller)
                     [[(caller)]] (calldataload 0)
+                    [[(calldataload 0)]] (caller)
+                    [[(sha3 (calldataload 0))]] (timestamp)
                     (stop)
                 }
             )
@@ -50,6 +51,7 @@
   
                 ;; Otherwise, unregister name.
                 (when @@(caller) {
+                    [[(sha3 @@(caller))]] 0
                     [[@@(caller)]] 0
                     [[(caller)]] 0
                 })
